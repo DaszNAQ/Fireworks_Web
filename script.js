@@ -1,7 +1,5 @@
-/* =========================================================
-   FIREWORK ENGINE
-   Pure JavaScript + Canvas
-========================================================= */
+/* FIREWORK ENGINE
+   Pure JavaScript + Canvas */
 
 const canvas = document.getElementById("fireworksCanvas");
 const ctx = canvas.getContext("2d");
@@ -22,28 +20,13 @@ let soundEnabled = true;
 let particleCount = 40;
 let gravity = 0.04;
 
-/*
- * Số pháo hoa tự động bắn mỗi đợt,
- * random trong khoảng 10-15 quả.
- */
-let fireworkAmountMin = 5;
-let fireworkAmountMax = 10;
+/* auto fire, random about 5-10 */
+let fireworkAmountMin = 1;
+let fireworkAmountMax = 3;
 
 let lastAutoLaunch = 0;
 
-/* =========================================================
-   BLOOM (glow toàn màn hình, tối ưu hiệu năng)
-========================================================= */
-
-/*
- * Bloom được vẽ trên 1 canvas riêng,
- * kích thước nhỏ hơn nhiều so với
- * canvas chính (downsample), rồi blur
- * + phóng to đè lên bằng chế độ cộng
- * sáng "lighter". Vì diện tích blur
- * nhỏ hơn nhiều lần nên chi phí giảm
- * theo bình phương tỉ lệ thu nhỏ.
- */
+/* BLOOM (glow fullscreen, optimize performance) */
 
 const BLOOM_SCALE = 0.28;
 const BLOOM_BLUR_PX = 8;
@@ -59,13 +42,11 @@ let lowFpsStreak = 0;
 
 function resizeBloomCanvas() {
 
-    bloomCanvas.width = Math.max(
-        1,
+    bloomCanvas.width = Math.max( 1,
         Math.floor(width * BLOOM_SCALE)
     );
 
-    bloomCanvas.height = Math.max(
-        1,
+    bloomCanvas.height = Math.max( 1,
         Math.floor(height * BLOOM_SCALE)
     );
 }
@@ -76,55 +57,47 @@ function drawBloom() {
         return;
     }
 
-    bloomCtx.clearRect(
-        0,
-        0,
+    bloomCtx.clearRect( 0, 0,
         bloomCanvas.width,
         bloomCanvas.height
     );
 
     for (let i = 0; i < particles.length; i++) {
-
         const particle = particles[i];
         const alpha = Math.max(0, particle.alpha);
-
         if (alpha <= 0.05) {
             continue;
         }
-
         bloomCtx.beginPath();
-
         bloomCtx.arc(
             particle.x * BLOOM_SCALE,
             particle.y * BLOOM_SCALE,
-            Math.max(1, particle.size * BLOOM_SCALE * 1.6),
-            0,
-            Math.PI * 2
+            Math.max(1, particle.size * BLOOM_SCALE * 1.6), 0, Math.PI * 2
         );
-
+        
         bloomCtx.fillStyle =
     `rgba(${particle.rgbStart.r}, ${particle.rgbStart.g}, ${particle.rgbStart.b}, ${alpha})`;
 
         bloomCtx.fill();
     }
 
-    for (let i = 0; i < fireworks.length; i++) {
+    // for (let i = 0; i < fireworks.length; i++) {
 
-        const firework = fireworks[i];
+    //     const firework = fireworks[i];
 
-        bloomCtx.beginPath();
+    //     bloomCtx.beginPath();
 
-        bloomCtx.arc(
-            firework.x * BLOOM_SCALE,
-            firework.y * BLOOM_SCALE,
-            3 * BLOOM_SCALE * 4,
-            0,
-            Math.PI * 2
-        );
+    //     bloomCtx.arc(
+    //         firework.x * BLOOM_SCALE,
+    //         firework.y * BLOOM_SCALE,
+    //         3 * BLOOM_SCALE * 4,
+    //         0,
+    //         Math.PI * 2
+    //     );
 
-        bloomCtx.fillStyle = "rgba(255, 255, 255, 0.9)";
-        bloomCtx.fill();
-    }
+    //     bloomCtx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    //     bloomCtx.fill();
+    // }
 
     bloomCtx.filter = `blur(${BLOOM_BLUR_PX}px)`;
 
@@ -175,9 +148,7 @@ function updateBloomQuality(time) {
     }
 }
 
-/* =========================================================
-   CANVAS SETUP
-========================================================= */
+/* CANVAS SETUP */
 
 function resizeCanvas() {
 
@@ -210,9 +181,7 @@ window.addEventListener("resize", resizeCanvas);
 
 resizeCanvas();
 
-/* =========================================================
-   UTILITIES
-========================================================= */
+/* UTILITIES */
 
 function random(min, max) {
     return Math.random() * (max - min) + min;
@@ -232,9 +201,7 @@ function distance(x1, y1, x2, y2) {
     );
 }
 
-/* =========================================================
-   COLOR
-========================================================= */
+/* COLOR */
 
 function randomColor() {
 
@@ -256,9 +223,7 @@ function randomColor() {
     ];
 }
 
-/* =========================================================
-   STARS
-========================================================= */
+/* STARS */
 
 function createStars() {
 
@@ -315,15 +280,7 @@ function drawStars(time) {
         ctx.fill();
     }
 }
-
-/* =========================================================
-   FIREWORK ROCKET
-========================================================= */
-
-/* =========================================================
-   SMOKE
-========================================================= */
-
+/* FIREWORK ROCKET & SMOKE */
 class Smoke {
 
     constructor(x, y) {
@@ -463,9 +420,7 @@ class Firework {
     }
 
     draw() {
-
         /* Trail */
-
         for (
             let i = 0;
             i < this.trail.length;
@@ -492,12 +447,6 @@ class Firework {
                     ")",
                     `,${alpha})`
                 );
-
-            /*
-             * Fallback because hex colors
-             * don't support alpha replacement.
-             */
-
             ctx.fillStyle =
                 hexToRGBA(
                     this.color,
@@ -536,18 +485,13 @@ class Firework {
     }
 }
 
-/* =========================================================
-   PARTICLE
-========================================================= */
+/* PARTICLE */
 
 class Particle {
 
     constructor() {
         this.alive = false;
     }
-
-    
-
     init(
         x, y, color, angle, speed, size,
         gravityScale = 1,
@@ -665,10 +609,7 @@ function spawnParticle(
 
     particles.push(particle);
 }
-/* =========================================================
-   EXPLOSION
-========================================================= */
-
+/* EXPLOSION */
 const explosionStyles = [
     "peony", "ring", "willow", "chrysanthemum", "crossette",
     "heart", "star", "doubleCircle", "planet", "fullCircle",
@@ -739,10 +680,7 @@ function createExplosion(
             break;
     }
 
-    /*
-     * Secondary sparkle particles,
-     * shared by every style.
-     */
+    /* Secondary sparkle particles, shared by every style. */
 
     const extra =
         Math.floor(
@@ -808,10 +746,7 @@ function explodeStar(x, y, color) {
     }
 }
 
-/*
- * Classic round burst
- * (the original style)
- */
+/* Classic round burst (the original style) */
 
 function explodePeony(x, y, color) {
 
@@ -833,10 +768,7 @@ function explodePeony(x, y, color) {
     }
 }
 
-/*
- * Thin, even ring —
- * narrow speed band
- */
+/* Thin, even ring — narrow speed band */
 
 function explodeRing(x, y, color) {
 
@@ -858,11 +790,7 @@ function explodeRing(x, y, color) {
     }
 }
 
-/*
- * Drooping willow —
- * falls slowly with
- * long trailing tails
- */
+/* Drooping willow — falls slowly with long trailing tails */
 
 function explodeWillow(x, y, color) {
 
@@ -887,11 +815,7 @@ function explodeWillow(x, y, color) {
     }
 }
 
-/*
- * Two-layer burst —
- * dense center +
- * sparkling outer ring
- */
+/* Two-layer burst — dense center + sparkling outer ring */
 
 function explodeChrysanthemum(
     x,
@@ -939,11 +863,7 @@ function explodeChrysanthemum(
     }
 }
 
-/*
- * Crossette —
- * splits into small
- * bursts mid-flight
- */
+/* Crossette — splits into small bursts mid-flight */
 
 function explodeCrossette(
     x,
@@ -993,9 +913,7 @@ function explodeCrossette(
     }
 }
 
-/*
- * Heart-shaped burst
- */
+/* Heart-shaped burst */
 
 function explodeHeart(x, y, color) {
 
@@ -1034,11 +952,7 @@ function explodeHeart(x, y, color) {
     }
 }
 
-/*
- * Double Circle —
- * 2 vòng màu khác nhau,
- * tốc độ khác nhau
- */
+/* Double Circle — different color and speed*/
 
 function explodeDoubleCircle(x, y, color) {
 
@@ -1077,11 +991,7 @@ function explodeDoubleCircle(x, y, color) {
     }
 }
 
-/*
- * Planet —
- * vòng lõi + vòng rải rác +
- * vành đai hình elip xoay
- */
+/* Planet */
 
 function explodePlanet(x, y, color) {
 
@@ -1168,11 +1078,7 @@ function explodePlanet(x, y, color) {
     }
 }
 
-/*
- * Full Circle —
- * vòng viền + lõi
- * đặc dày
- */
+/* Full Circle */
 
 function explodeFullCircle(x, y, color) {
 
@@ -1214,11 +1120,7 @@ function explodeFullCircle(x, y, color) {
     }
 }
 
-/*
- * Double Full Circle —
- * 2 màu + lõi đặc,
- * dày nhất trong các kiểu
- */
+/* Double Full Circle */
 
 function explodeDoubleFullCircle(
     x,
@@ -1282,11 +1184,7 @@ function explodeDoubleFullCircle(
     }
 }
 
-/*
- * Random Burst —
- * pháo hoa hỗn loạn,
- * không đối xứng
- */
+/* Random Burst */
 
 function explodeRandomBurst(x, y, color) {
 
@@ -1314,9 +1212,7 @@ function explodeRandomBurst(x, y, color) {
     }
 }
 
-/* =========================================================
-   LAUNCH
-========================================================= */
+/* LAUNCH */
 
 function launchFirework(
     x,
@@ -1333,9 +1229,7 @@ function launchFirework(
     );
 }
 
-/* =========================================================
-   AUTO FIREWORK
-========================================================= */
+/* AUTO FIREWORK */
 
 function autoLaunchFireworks(time) {
 
@@ -1343,10 +1237,7 @@ function autoLaunchFireworks(time) {
         return;
     }
 
-    /*
-     * Launch every ~1000ms
-     */
-
+    //Launch every ~1000ms
     if (
         time - lastAutoLaunch >
         1000
@@ -1364,12 +1255,6 @@ function autoLaunchFireworks(time) {
             i++
         ) {
 
-            /*
-             * Stagger each launch slightly
-             * so 10-15 rockets don't all
-             * fire on the exact same frame.
-             */
-
             setTimeout(() => {
 
                 const targetX =
@@ -1381,7 +1266,7 @@ function autoLaunchFireworks(time) {
                 const targetY =
                     random(
                         height * 0.12,
-                        height * 0.62
+                        height * 0.60
                     );
 
                 launchFirework(
@@ -1396,9 +1281,7 @@ function autoLaunchFireworks(time) {
     }
 }
 
-/* =========================================================
-   MOUSE / TOUCH
-========================================================= */
+/* MOUSE / TOUCH */
 
 canvas.addEventListener(
     "pointerdown",
@@ -1424,9 +1307,7 @@ canvas.addEventListener(
     }
 );
 
-/* =========================================================
-   AUDIO
-========================================================= */
+/* AUDIO */
 
 let audioContext = null;
 let explosionBuffer = null;
@@ -1451,11 +1332,7 @@ function initAudio() {
         audioContext.resume();
     }
 
-    /*
-     * Load the real explosion sound
-     * file once and decode it into
-     * a reusable AudioBuffer.
-     */
+    /* Load file explosion sound */
 
     if (
         !explosionBuffer &&
@@ -1464,16 +1341,16 @@ function initAudio() {
 
         explosionBufferLoading = true;
 
-        // fetch("sound/firework.wav")
-        //     .then(response => response.arrayBuffer())
-        //     .then(data => audioContext.decodeAudioData(data))
-        //     .then(buffer => {
-        //         explosionBuffer = buffer;
-        //     })
-        //     .catch(error => {
-        //         explosionBufferLoading = false;
-        //         console.error("Không giải mã được firework.wav:", error);
-        //     });
+        /* fetch("sound/firework.wav")
+             .then(response => response.arrayBuffer())
+             .then(data => audioContext.decodeAudioData(data))
+             .then(buffer => {
+                 explosionBuffer = buffer;
+             })
+             .catch(error => {
+                 explosionBufferLoading = false;
+                 console.error("Không giải mã được firework.wav:", error);
+             }); */
     }
 }
 
@@ -1612,9 +1489,7 @@ function playLaunchSound() {
     );
 }
 
-/* =========================================================
-   CLEAR
-========================================================= */
+/* CLEAR */
 
 function clearFireworks() {
 
@@ -1622,9 +1497,7 @@ function clearFireworks() {
     particles = [];
 }
 
-/* =========================================================
-   COLOR HELPER
-========================================================= */
+/* COLOR HELPER */
 
 function hexToRGB(hex) {
 
@@ -1684,9 +1557,7 @@ function hexToRGBA(
     )`;
 }
 
-/* =========================================================
-   BACKGROUND FADE
-========================================================= */
+/* BACKGROUND */
 
 function drawBackground() {
 
@@ -1819,9 +1690,7 @@ function drawBackground() {
 //     );
 // }
 
-/* =========================================================
-   MAIN LOOP
-========================================================= */
+/* MAIN */
 
 function animate(time) {
 
@@ -1835,9 +1704,7 @@ function animate(time) {
 
     drawStars(time);
 
-    /*
-     * LAUNCH SMOKE
-     */
+    /* LAUNCH SMOKE */
 
     for (
         let i = smokeParticles.length - 1;
@@ -1866,9 +1733,7 @@ function animate(time) {
 
     autoLaunchFireworks(time);
 
-    /*
-     * FIREWORK ROCKETS
-     */
+    /* FIREWORK ROCKETS */
 
     for (
         let i = fireworks.length - 1;
@@ -1896,9 +1761,7 @@ function animate(time) {
         firework.draw();
     }
 
-    /*
-     * PARTICLES
-     */
+    /* PARTICLES */
 
     const MAX_PARTICLES = 300;
 
@@ -1938,9 +1801,7 @@ function animate(time) {
     drawBloom();
 }
 
-/* =========================================================
-   START
-========================================================= */
+/* START */
 
 createStars();
 
@@ -1950,9 +1811,7 @@ requestAnimationFrame(
     animate
 );
 
-/*
- * Initial fireworks
- */
+/* Initial fireworks */
 
 setTimeout(() => {
 
